@@ -1,0 +1,77 @@
+﻿@page "/factors"
+@rendermode InteractiveServer
+
+<h3>Factors</h3>
+
+<hr />
+
+Current integer <input @bind="CurrentValue" type="number"/>
+
+<button class="btn btn-primary" @onclick="OnUpdate">Update</button>
+
+<hr />
+
+@code {
+    string CurrentValue = "4444488889";
+}
+@if (primes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Prime</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prime in primes)
+        {
+            <tr>
+                <td>@prime.Key</td>
+                <td>@prime.Value</td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+
+@code {
+    private Dictionary<long, long>? primes;
+    protected override void OnInitialized()
+    {
+        OnUpdate();
+    }
+
+    private void OnUpdate()
+    {
+        long number = long.Parse(CurrentValue);
+        primes = CountFactors(number);
+    }
+
+    public static Dictionary<long, long> CountFactors(long integer)
+    {
+        var count = new Dictionary<long, long>();
+        long currentDivisor = 2;
+        while (currentDivisor <= integer)
+        {
+            while (integer % currentDivisor == 0)
+            {
+                integer /= currentDivisor;
+                if (count.TryGetValue(currentDivisor, out long value))
+                {
+                    count[currentDivisor] = value + 1;
+                }
+                else
+                {
+                    count[currentDivisor] = 1;
+                }
+            }
+            currentDivisor++;
+        }
+        return count;
+    }
+}
